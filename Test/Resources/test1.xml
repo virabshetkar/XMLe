@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <datas>
+    <data id="id1">
+      <value>Value1</value>
+    </data>
+    <data id="id2">
+      <value>Name2</value>
+    </data>
+    <data id="id3">
+      <value>Name3</value>
+    </data>
+  </datas>
+</root>
