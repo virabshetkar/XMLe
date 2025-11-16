@@ -24,9 +24,27 @@ public class Program
 
         var root = new RootCommand("My example App");
 
+        var toCsv = new Command("csv", "Covert to Csv");
+        var xmlFilePathOption = new Option<string>("xmlFile", "-f", "--file");
+        var csvFilePathOption = new Option<string>("csvFile", "-o", "--output");
+        toCsv.Add(xmlFilePathOption);
+        toCsv.Add(csvFilePathOption);
+
+
+        toCsv.SetAction((res) =>
+        {
+            var xmlFilePath = res.GetValue(xmlFilePathOption);
+            var csvFilePath = res.GetValue(csvFilePathOption);
+
+            var csvParser = new CsvParser();
+
+            csvParser.ToCsv(xmlFilePath, csvFilePath);
+        });
+
         root.Add(xmlFileArgs);
         root.Add(keyOption);
         root.Add(valueOption);
+        root.Add(toCsv);
 
         root.SetAction((res) =>
         {
@@ -65,6 +83,8 @@ public class Program
             else
             {
                 xmlService.UpdateValue(xml, keyOpt, valueOpt);
+
+                // Save File
                 xml.Save(xmlPath);
             }
         });
