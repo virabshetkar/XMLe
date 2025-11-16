@@ -10,6 +10,7 @@ public class AppCommand
     private readonly Argument<string> xmlPathArgument;
 
     private readonly CsvCommand csvCommand = new CsvCommand();
+    private readonly HelloWorldCommand hwCommand = new HelloWorldCommand();
 
     private readonly RootCommand command;
 
@@ -36,6 +37,7 @@ public class AppCommand
         command.Add(xmlPathArgument);
 
         command.Add(csvCommand.Command);
+        command.Add(hwCommand.Command);
     }
 
     public async Task<int> InvokeAsync(string[] args)
