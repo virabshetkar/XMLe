@@ -22,7 +22,7 @@ public class HelloWorldCommand
 
     private async Task Action(ParseResult parseResult)
     {
-        Console.WriteLine("Hello World!");
+        Console.WriteLine("HELLO WORLD!");
     }
 }
 
