@@ -25,6 +25,7 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
+          token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
           files: |
             publish/linux
             publish/win
