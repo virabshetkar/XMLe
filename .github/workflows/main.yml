@@ -27,5 +27,5 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
-            publish/linux
-            publish/win
+            publish/linux/*
+            publish/win/*
