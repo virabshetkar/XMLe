@@ -21,11 +21,17 @@ jobs:
 
       - name: Publish Windows
         run: dotnet publish -c Release -r win-x64 --self-contained true -o publish/win
+
+      - name: Zip publish/linux
+        run: zip -r linux.zip publish/linux/
+
+      - name: Zip publish/win
+        run: zip -r win.zip publish/win/
           
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
-            publish/linux/*
-            publish/win/*
+            linux.zip
+            win.zip
