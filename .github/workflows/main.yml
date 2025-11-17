@@ -6,7 +6,7 @@ on:
       - "v*"
 
 jobs: 
-  build-and-release:
+  build:
     runs-on: self-hosted
 
     steps: 
@@ -16,18 +16,30 @@ jobs:
       - name: Restore
         run: dotnet restore
 
+  publish-linux:
+    needs: build
+    runs-on: self-hosted
+    steps:
       - name: Publish Linux
         run: dotnet publish -c Release -r linux-x64 --self-contained true -o publish/linux
-
+        
+      - name: Zip publish/linux
+        run: zip -r linux.zip publish/linux/
+  publish-win:
+    needs: build
+    runs-on: self-hosted
+    steps:
       - name: Publish Windows
         run: dotnet publish -c Release -r win-x64 --self-contained true -o publish/win
 
-      - name: Zip publish/linux
-        run: zip -r linux.zip publish/linux/
-
       - name: Zip publish/win
         run: zip -r win.zip publish/win/
-          
+  release:
+    runs-on: self-hosted
+    needs:
+      - publish-linux
+      - publish-win
+    steps:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
