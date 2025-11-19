@@ -20,10 +20,10 @@ public class CsvParser
             if (dataXml is null) continue;
 
             var value = dataXml.SelectSingleNode("value")?.InnerText;
-            string? id = dataXml.Attributes?["id"]?.Value;
+            string? name = dataXml.Attributes?["name"]?.Value;
             var comment = dataXml.SelectSingleNode("comment")?.InnerText;
 
-            csvOutput += $"{id},{comment},{value}\n";
+            csvOutput += $"{name},{comment},{value}\n";
         }
 
         File.WriteAllText(toPath, csvOutput);

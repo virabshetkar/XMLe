@@ -1,32 +1,45 @@
+using Newtonsoft.Json;
 using System.Xml;
 
 namespace XMLe.Services;
 
 public class XMLService
 {
-    public XmlDocument GetBuffer(string filepath)
+    public XmlDocument GetRootXml(string filepath)
     {
+        var xrs = new XmlReaderSettings()
+        {
+            IgnoreWhitespace = true,
+        };
+
+        var reader = XmlReader.Create(filepath, xrs);
+
         var doc = new XmlDocument();
-        doc.Load(filepath);
+
+        doc.Load(reader);
         return doc;
     }
 
-    private XmlElement GetDataValue(XmlDocument xml, string id)
+    public string GetValueFromXpath(XmlDocument xml, string xpath)
     {
-        var el = xml.SelectSingleNode($"//data[@id='{id}']//value");
-        if (el == null) throw new Exception($"Could not find {id}");
-        if (el is not XmlElement) throw new Exception($"{id} is not an XmlElement");
-        return (XmlElement)el;
+        var el = xml.SelectNodes(xpath);
+        if (el == null) throw new Exception("No element found!");
+
+        return JsonConvert.SerializeObject(el, Newtonsoft.Json.Formatting.Indented);
     }
 
-    public string GetValue(XmlDocument xml, string id)
+    public void UpdateValueForXpath(XmlDocument xml, string xpath, string value)
     {
-        return GetDataValue(xml, id).InnerXml;
-    }
+        var el = xml.SelectSingleNode(xpath);
+        if (el == null) throw new Exception("No element found!");
 
-    public void UpdateValue(XmlDocument xml, string id, string value)
-    {
-        var el = GetDataValue(xml, id);
-        el.InnerText = value;
+        if (el is XmlAttribute)
+        {
+            el.Value = value;
+        }
+        else if (el is XmlElement)
+        {
+            el.InnerXml = value;
+        }
     }
 }

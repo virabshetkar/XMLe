@@ -7,6 +7,6 @@ public class Program
     public static async Task Main(string[] args)
     {
         var app = new AppCommand();
-        await app.InvokeAsync(args);
+        await app.Parse(args).InvokeAsync();
     }
 }

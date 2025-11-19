@@ -3,53 +3,37 @@ using XMLe.Services;
 
 namespace XMLe.Commands;
 
-public class AppCommand
+public class AppCommand : RootCommand
 {
-    private readonly Option<string> keyOption;
-    private readonly Option<string> valueOption;
+    private readonly Option<string> xpathOption;
     private readonly Argument<string> xmlPathArgument;
 
-    private readonly CsvCommand csvCommand = new CsvCommand();
-    private readonly HelloWorldCommand hwCommand = new HelloWorldCommand();
+    private readonly UpdateCommand updateCommand = new UpdateCommand();
 
-    private readonly RootCommand command;
-
-    public AppCommand()
+    public AppCommand() : base("XMLe Command")
     {
-        keyOption = new Option<string>("key", "-k", "--key")
+        xpathOption = new Option<string>("xpath", "-x")
         {
-            Description = "Id of the data to change"
+            Description = "XPath to find the first XML Element",
+            Required = true
         };
-        valueOption = new Option<string>("value", "-v", "--value")
-        {
-            Description = "New value for Id specified"
-        };
+
         xmlPathArgument = new Argument<string>("xmlPath")
         {
-            Description = "XML file to edit"
+            Description = "XML file to edit",
         };
 
-        command = new RootCommand("XMLe Command");
-        command.SetAction(this.Action);
+        SetAction(ActionHandler);
 
-        command.Add(keyOption);
-        command.Add(valueOption);
-        command.Add(xmlPathArgument);
+        Add(xmlPathArgument);
+        Add(xpathOption);
 
-        command.Add(csvCommand.Command);
-        command.Add(hwCommand.Command);
+        Add(updateCommand);
     }
 
-    public async Task<int> InvokeAsync(string[] args)
-    {
-        return await command.Parse(args).InvokeAsync();
-    }
-
-    private async Task Action(ParseResult parseResult)
+    private async Task ActionHandler(ParseResult parseResult)
     {
         var xmlPath = parseResult.GetValue(xmlPathArgument);
-        var keyOpt = parseResult.GetValue(keyOption);
-        var valueOpt = parseResult.GetValue(valueOption);
 
         if (xmlPath == null)
         {
@@ -57,34 +41,31 @@ public class AppCommand
             return;
         }
 
-        if (keyOpt == null)
+        xmlPath = Path.GetFullPath(xmlPath);
+        if (!Path.Exists(xmlPath))
         {
-            Console.WriteLine("Key is not given");
+            Console.WriteLine("Xml file does not exist!");
             return;
         }
 
-        xmlPath = Path.GetFullPath(xmlPath);
-        var xmlService = new XMLService();
-        var xml = xmlService.GetBuffer(xmlPath);
-
-        if (valueOpt == null)
+        var xpath = parseResult.GetValue(xpathOption);
+        if (xpath == null)
         {
-            try
-            {
-
-                Console.WriteLine(xmlService.GetValue(xml, keyOpt));
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+            Console.WriteLine("XPath is not given");
+            return;
         }
-        else
-        {
-            xmlService.UpdateValue(xml, keyOpt, valueOpt);
 
-            // Save File
-            xml.Save(xmlPath);
+        var xmlService = new XMLService();
+        var xml = xmlService.GetRootXml(xmlPath);
+
+        try
+        {
+            var data = xmlService.GetValueFromXpath(xml, xpath);
+            Console.WriteLine(data);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
         }
     }
 }
