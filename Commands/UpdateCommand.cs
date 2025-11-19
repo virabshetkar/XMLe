@@ -1,4 +1,3 @@
-using System.Xml;
 using System.CommandLine;
 
 using XMLe.Services;

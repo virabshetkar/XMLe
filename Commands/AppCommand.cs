@@ -9,6 +9,7 @@ public class AppCommand : RootCommand
     private readonly Argument<string> xmlPathArgument;
 
     private readonly UpdateCommand updateCommand = new UpdateCommand();
+    private readonly TableCommand tableCommand = new TableCommand();
 
     public AppCommand() : base("XMLe Command")
     {
@@ -29,6 +30,7 @@ public class AppCommand : RootCommand
         Add(xpathOption);
 
         Add(updateCommand);
+        Add(tableCommand);
     }
 
     private async Task ActionHandler(ParseResult parseResult)
