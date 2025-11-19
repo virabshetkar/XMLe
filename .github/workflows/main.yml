@@ -1,15 +1,15 @@
 name: Release
 
-on: 
+on:
   push:
-    tags: 
+    tags:
       - "v*"
 
-jobs: 
+jobs:
   build:
     runs-on: self-hosted
 
-    steps: 
+    steps:
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -22,9 +22,7 @@ jobs:
     steps:
       - name: Publish Linux
         run: dotnet publish -c Release -r linux-x64 --self-contained true -o publish/linux
-        
-      - name: Zip publish/linux
-        run: zip -r linux.zip publish/linux/
+
   publish-win:
     needs: build
     runs-on: self-hosted
@@ -32,8 +30,6 @@ jobs:
       - name: Publish Windows
         run: dotnet publish -c Release -r win-x64 --self-contained true -o publish/win
 
-      - name: Zip publish/win
-        run: zip -r win.zip publish/win/
   release:
     runs-on: self-hosted
     needs:
@@ -45,5 +41,5 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
-            linux.zip
-            win.zip
+            publish/linux/XMLe
+            publish/win/XMLe.exe
