@@ -1,7 +1,7 @@
 using System.CommandLine;
-using XMLe.Services;
+using xmle.Services;
 
-namespace XMLe.Commands;
+namespace xmle.Commands;
 
 public class AppCommand : RootCommand
 {
@@ -11,7 +11,7 @@ public class AppCommand : RootCommand
     private readonly UpdateCommand updateCommand = new UpdateCommand();
     private readonly TableCommand tableCommand = new TableCommand();
 
-    public AppCommand() : base("XMLe Command")
+    public AppCommand() : base("xmle Command")
     {
         xpathOption = new Option<string>("xpath", "-x")
         {

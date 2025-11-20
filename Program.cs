@@ -1,6 +1,6 @@
-﻿using XMLe.Commands;
+﻿using xmle.Commands;
 
-namespace XMLe;
+namespace xmle;
 
 public class Program
 {

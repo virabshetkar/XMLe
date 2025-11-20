@@ -1,8 +1,8 @@
 using System.CommandLine;
 
-using XMLe.Services;
+using xmle.Services;
 
-namespace XMLe.Commands;
+namespace xmle.Commands;
 
 public class UpdateCommand : Command
 {

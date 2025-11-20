@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using System.Xml;
 
-namespace XMLe.Services;
+namespace xmle.Services;
 
 public class XMLService
 {

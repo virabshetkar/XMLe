@@ -1,7 +1,7 @@
 using System.CommandLine;
 using System.Xml;
 
-namespace XMLe.Commands;
+namespace xmle.Commands;
 
 public class TableCommand : Command
 {
