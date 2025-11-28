@@ -25,7 +25,7 @@ jobs:
 
     steps:
       - name: Push to nuget
-        run: dotnet nuget push nupkgs/*.nupkg -k ${{ secrets.GITHUB_TOKEN }} -s "https://nuget.pkg.github.com/virabshetkar/index.json"
+        run: dotnet nuget push nupkg/*.nupkg -k ${{ secrets.GITHUB_TOKEN }} -s "https://nuget.pkg.github.com/virabshetkar/index.json"
 
   release:
     needs: publish-nuget
