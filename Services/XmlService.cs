@@ -3,7 +3,14 @@ using System.Xml;
 
 namespace xmle.Services;
 
-public class XMLService
+public interface IXmlService
+{
+    XmlDocument GetRootXml(string filepath);
+    string GetValueFromXpath(XmlDocument xml, string xpath);
+    void UpdateValueForXpath(XmlDocument xml, string xpath, string value);
+}
+
+public class XmlService : IXmlService
 {
     public XmlDocument GetRootXml(string filepath)
     {

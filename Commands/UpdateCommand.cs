@@ -8,8 +8,9 @@ public class UpdateCommand : Command
 {
     private readonly Option<string> xpathOption;
     private readonly Option<string> valueOption;
+    private readonly IXmlService xmlService;
 
-    public UpdateCommand() : base("update", "Updates the xml xpath value pair")
+    public UpdateCommand(IXmlService xmlService) : base("update", "Updates the xml xpath value pair")
     {
         xpathOption = new Option<string>("xpath", "-x")
         {
@@ -27,6 +28,7 @@ public class UpdateCommand : Command
 
         Add(xpathOption);
         Add(valueOption);
+        this.xmlService = xmlService;
     }
 
     private async Task ActionHandler(ParseResult parseResult)
@@ -43,7 +45,6 @@ public class UpdateCommand : Command
         var xpath = parseResult.GetValue(xpathOption)!;
         var value = parseResult.GetValue(valueOption)!;
 
-        var xmlService = new XMLService();
         var xml = xmlService.GetRootXml(xmlPath);
 
         try

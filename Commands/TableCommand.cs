@@ -45,7 +45,6 @@ public class TableCommand : Command
 
         var nodes = xml.SelectNodes(rootXPath);
 
-        Console.Write("\n");
         foreach (var node in nodes)
         {
             if (node is XmlElement)
@@ -53,17 +52,22 @@ public class TableCommand : Command
                 var el = (XmlElement)node;
                 var list = new List<string>();
 
-                foreach (var col in columnNames)
+                for (int i = 0; i < columnNames.Length - 1; i++)
                 {
-                    var element = el.SelectSingleNode(col);
-                    if (element is null) Console.Write(Fit("IS NULL!"));
-                    else if (element is XmlAttribute) { Console.Write(Fit(element.Value)); }
-                    else if (element is XmlElement) { Console.Write(Fit(element.InnerXml)); }
-                    Console.Write("\t");
+                    var element = el.SelectSingleNode(columnNames[i]);
+                    Console.Write($"{GetValue(element)},");
                 }
 
-                Console.Write("\n");
+                Console.WriteLine(GetValue(el.SelectSingleNode(columnNames[columnNames.Length - 1])));
             }
         }
+    }
+
+    private string GetValue(XmlNode? element)
+    {
+        if (element is null) return "";
+        if (element is XmlAttribute) { return element.Value; }
+        else if (element is XmlElement) { return element.InnerXml; }
+        return "";
     }
 }

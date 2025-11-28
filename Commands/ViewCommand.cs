@@ -1,41 +1,39 @@
 using System.CommandLine;
+using System.CommandLine.Parsing;
 using xmle.Services;
 
 namespace xmle.Commands;
 
-public class AppCommand : RootCommand
+public class ViewCommand : Command
 {
-    private readonly Option<string> xpathOption;
-    private readonly Argument<string> xmlPathArgument;
+    private readonly IXmlService xmlService;
 
-    private readonly UpdateCommand updateCommand = new UpdateCommand();
-    private readonly TableCommand tableCommand = new TableCommand();
+    private Option<string> xpathOption;
+    private Argument<string> xmlPathArgument;
 
-    public AppCommand() : base("xmle Command")
+    public ViewCommand(IXmlService xmlService) : base("view", "View data in JSON format")
     {
         xpathOption = new Option<string>("xpath", "-x")
         {
             Description = "XPath to find the first XML Element",
-            Required = true
+            DefaultValueFactory = (ArgumentResult res) => { return "/"; }
         };
 
         xmlPathArgument = new Argument<string>("xmlPath")
         {
-            Description = "XML file to edit",
+            Description = "Path to XML file",
         };
-
-        SetAction(ActionHandler);
 
         Add(xmlPathArgument);
         Add(xpathOption);
 
-        Add(updateCommand);
-        Add(tableCommand);
+        SetAction(ActionHandler);
+        this.xmlService = xmlService;
     }
 
-    private async Task ActionHandler(ParseResult parseResult)
+    private async Task ActionHandler(ParseResult result)
     {
-        var xmlPath = parseResult.GetValue(xmlPathArgument);
+        var xmlPath = result.GetValue(xmlPathArgument);
 
         if (xmlPath == null)
         {
@@ -50,14 +48,13 @@ public class AppCommand : RootCommand
             return;
         }
 
-        var xpath = parseResult.GetValue(xpathOption);
+        var xpath = result.GetValue(xpathOption);
         if (xpath == null)
         {
             Console.WriteLine("XPath is not given");
             return;
         }
 
-        var xmlService = new XMLService();
         var xml = xmlService.GetRootXml(xmlPath);
 
         try
