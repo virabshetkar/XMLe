@@ -6,7 +6,7 @@ namespace xmle.Commands;
 
 public class TableCommand : Command
 {
-    string Fit(string s) => s.Length <= 30 ? s.PadRight(30) : s.Substring(0, 29) + " ";
+    private string Fit(string s) => s.Length <= 30 ? s.PadRight(30) : s.Substring(0, 29) + " ";
 
     private readonly Option<string[]> columnNamesOption = new Option<string[]>("colNames", "-c", "--cols")
     {
@@ -19,11 +19,20 @@ public class TableCommand : Command
         Required = true
     };
 
-    public TableCommand() : base("table", "Creates a table")
+    private readonly Argument<string> xmlPathArgument = new Argument<string>("xmlPath")
+    {
+        Description = "Path to XML file",
+    };
+
+    private readonly TextWriter writer;
+
+    public TableCommand(TextWriter writer) : base("table", "Creates a table")
     {
         Add(columnNamesOption);
         Add(rootXPathOption);
+        Add(xmlPathArgument);
         SetAction(ActionHandler);
+        this.writer = writer;
     }
 
     private async Task ActionHandler(ParseResult result)
@@ -36,7 +45,7 @@ public class TableCommand : Command
         xmlPath = Path.GetFullPath(xmlPath);
         if (!Path.Exists(xmlPath))
         {
-            Console.WriteLine("XML path does not exist");
+            writer.WriteLine("XML path does not exist");
             return;
         }
 
@@ -58,10 +67,10 @@ public class TableCommand : Command
                 for (int i = 0; i < columnNames.Length - 1; i++)
                 {
                     var element = el.SelectSingleNode(columnNames[i]);
-                    Console.Write($"{GetValue(element)},");
+                    writer.Write($"{GetValue(element)},");
                 }
 
-                Console.WriteLine(GetValue(el.SelectSingleNode(columnNames[columnNames.Length - 1])));
+                writer.WriteLine(GetValue(el.SelectSingleNode(columnNames[columnNames.Length - 1])));
             }
         }
     }

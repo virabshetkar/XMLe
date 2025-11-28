@@ -7,11 +7,11 @@ namespace xmle.Commands;
 public class ViewCommand : Command
 {
     private readonly IXmlService xmlService;
-
+    private readonly TextWriter writer;
     private Option<string> xpathOption;
     private Argument<string> xmlPathArgument;
 
-    public ViewCommand(IXmlService xmlService) : base("view", "View data in JSON format")
+    public ViewCommand(IXmlService xmlService, TextWriter writer) : base("view", "View data in JSON format")
     {
         xpathOption = new Option<string>("xpath", "-x")
         {
@@ -29,6 +29,7 @@ public class ViewCommand : Command
 
         SetAction(ActionHandler);
         this.xmlService = xmlService;
+        this.writer = writer;
     }
 
     private async Task ActionHandler(ParseResult result)
@@ -37,21 +38,21 @@ public class ViewCommand : Command
 
         if (xmlPath == null)
         {
-            Console.WriteLine("You need to give a path");
+            writer.WriteLine("You need to give a path");
             return;
         }
 
         xmlPath = Path.GetFullPath(xmlPath);
         if (!Path.Exists(xmlPath))
         {
-            Console.WriteLine("Xml file does not exist!");
+            writer.WriteLine("Xml file does not exist!");
             return;
         }
 
         var xpath = result.GetValue(xpathOption);
         if (xpath == null)
         {
-            Console.WriteLine("XPath is not given");
+            writer.WriteLine("XPath is not given");
             return;
         }
 
@@ -60,11 +61,11 @@ public class ViewCommand : Command
         try
         {
             var data = xmlService.GetValueFromXpath(xml, xpath);
-            Console.WriteLine(data);
+            writer.WriteLine(data);
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.Message);
+            writer.WriteLine(e.Message);
         }
     }
 }
