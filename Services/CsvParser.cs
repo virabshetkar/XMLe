@@ -1,10 +1,14 @@
 using System.Xml;
 
-namespace XMLe.Services;
+namespace xmle.Services;
 
-public class CsvParser
+public interface ICsvParser
 {
+    void ToCsv(string xmlPath, string toPath);
+}
 
+public class CsvParser : ICsvParser
+{
     public void ToCsv(string xmlPath, string toPath)
     {
         var xmlDoc = new XmlDocument();

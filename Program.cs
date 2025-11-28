@@ -1,12 +1,39 @@
-﻿using XMLe.Commands;
+﻿using System.CommandLine;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace XMLe;
+using xmle.Commands;
+using xmle.Services;
+
+
+namespace xmle;
 
 public class Program
 {
     public static async Task Main(string[] args)
     {
-        var app = new AppCommand();
-        await app.Parse(args).InvokeAsync();
+        var services = new ServiceCollection();
+        ConfigureServices(services);
+        var provider = services.BuildServiceProvider();
+
+        var rootCommand = RootCommandBuilder.Build(provider);
+
+        foreach (var commandType in RootCommandBuilder.GetAllCommands())
+        {
+            rootCommand.Add((Command)provider.GetRequiredService(commandType));
+        }
+
+        await rootCommand.Parse(args).InvokeAsync();
+    }
+
+    public static void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSingleton<ICsvParser, CsvParser>();
+        services.AddSingleton<IXmlService, XmlService>();
+        services.AddSingleton<TextWriter>(Console.Out);
+
+        foreach (var commandType in RootCommandBuilder.GetAllCommands())
+        {
+            services.AddTransient(commandType);
+        }
     }
 }

@@ -16,30 +16,20 @@ jobs:
       - name: Restore
         run: dotnet restore
 
-  publish-linux:
-    needs: build
-    runs-on: self-hosted
-    steps:
-      - name: Publish Linux
-        run: dotnet publish -c Release -r linux-x64 --self-contained true -o publish/linux
+      - name: Build
+        run: dotnet build
 
-  publish-win:
+  publish-nuget:
     needs: build
     runs-on: self-hosted
+
     steps:
-      - name: Publish Windows
-        run: dotnet publish -c Release -r win-x64 --self-contained true -o publish/win
+      - name: Push to nuget
+        run: dotnet nuget push nupkg/*.nupkg -k ${{ secrets.GITHUB_TOKEN }} -s "https://nuget.pkg.github.com/virabshetkar/index.json"
 
   release:
+    needs: publish-nuget
     runs-on: self-hosted
-    needs:
-      - publish-linux
-      - publish-win
     steps:
       - name: Create Release
         uses: softprops/action-gh-release@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          files: |
-            publish/linux/XMLe
-            publish/win/XMLe.exe
