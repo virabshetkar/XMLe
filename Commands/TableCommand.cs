@@ -3,6 +3,7 @@ using System.Xml;
 
 namespace xmle.Commands;
 
+
 public class TableCommand : Command
 {
     string Fit(string s) => s.Length <= 30 ? s.PadRight(30) : s.Substring(0, 29) + " ";
@@ -30,6 +31,7 @@ public class TableCommand : Command
         var columnNames = result.GetValue(columnNamesOption)!;
         var rootXPath = result.GetValue(rootXPathOption)!;
         var xmlPath = result.GetValue<string>("xmlPath");
+        if (xmlPath == null) return;
 
         xmlPath = Path.GetFullPath(xmlPath);
         if (!Path.Exists(xmlPath))
@@ -44,6 +46,7 @@ public class TableCommand : Command
         var table = new List<List<string>>();
 
         var nodes = xml.SelectNodes(rootXPath);
+        if (nodes is null) return;
 
         foreach (var node in nodes)
         {
@@ -66,8 +69,8 @@ public class TableCommand : Command
     private string GetValue(XmlNode? element)
     {
         if (element is null) return "";
-        if (element is XmlAttribute) { return element.Value; }
-        else if (element is XmlElement) { return element.InnerXml; }
+        else if (element is XmlAttribute) return element.Value ?? "";
+        else if (element is XmlElement) return element.InnerXml;
         return "";
     }
 }
