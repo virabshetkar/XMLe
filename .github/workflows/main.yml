@@ -16,7 +16,11 @@ jobs:
       - name: Restore
         run: dotnet restore
 
+      - name: Build
+        run: dotnet build
+
   publish-nuget:
+    needs: build
     runs-on: self-hosted
 
     steps:
@@ -24,6 +28,7 @@ jobs:
         run: dotnet nuget push nupkgs/*.nupkg -k ${{ secrets.GITHUB_TOKEN }} -s "https://nuget.pkg.github.com/virabshetkar/index.json"
 
   release:
+    needs: publish-nuget
     runs-on: self-hosted
     steps:
       - name: Create Release
