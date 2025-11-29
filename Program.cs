@@ -29,6 +29,8 @@ public class Program
     {
         services.AddSingleton<ICsvParser, CsvParser>();
         services.AddSingleton<IXmlService, XmlService>();
+        services.AddSingleton<IConfigService, ConfigService>();
+
         services.AddSingleton<TextWriter>(Console.Out);
 
         foreach (var commandType in RootCommandBuilder.GetAllCommands())

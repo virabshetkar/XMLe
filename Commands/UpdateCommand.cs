@@ -13,6 +13,9 @@ public class UpdateCommand : Command
 
     public UpdateCommand(IXmlService xmlService, TextWriter writer) : base("update", "Updates the xml xpath value pair")
     {
+        this.xmlService = xmlService;
+        this.writer = writer;
+
         xpathOption = new Option<string>("xpath", "-x")
         {
             Description = "XPath to find the first XML Element",
@@ -29,8 +32,6 @@ public class UpdateCommand : Command
 
         Add(xpathOption);
         Add(valueOption);
-        this.xmlService = xmlService;
-        this.writer = writer;
     }
 
     private async Task ActionHandler(ParseResult parseResult)
