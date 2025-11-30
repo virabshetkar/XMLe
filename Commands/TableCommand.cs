@@ -1,6 +1,6 @@
 using System.CommandLine;
-using System.CommandLine.Parsing;
 using System.Xml;
+
 using xmle.Services;
 
 namespace xmle.Commands;
@@ -8,37 +8,33 @@ namespace xmle.Commands;
 
 public class TableCommand : Command
 {
-    private readonly IConfigService config;
     private readonly TextWriter writer;
-
-    private string Fit(string s) => s.Length <= 30 ? s.PadRight(30) : s.Substring(0, 29) + " ";
 
     private readonly Option<string[]> columnNamesOption;
     private readonly Option<string[]> headingsOption;
     private readonly Option<string> rootXPathOption;
-    private readonly Argument<string> xmlPathArgument = new Argument<string>("xmlPath")
+    private readonly Argument<string> xmlPathArgument = new("xmlPath")
     {
         Description = "Path to XML file",
     };
 
     public TableCommand(IConfigService config, TextWriter writer) : base("table", "Creates a table")
     {
-        this.config = config;
         this.writer = writer;
 
         columnNamesOption = new Option<string[]>("colNames", "-c", "--cols")
         {
-            DefaultValueFactory = (ArgumentResult res) => { return config.GetConfig()?.Columns ?? null; },
+            DefaultValueFactory = res => { return config.GetConfig()?.Columns ?? null; },
         };
 
         rootXPathOption = new Option<string>("rootXpath", "-r", "--root")
         {
-            DefaultValueFactory = (ArgumentResult res) => { return config.GetConfig()?.Table ?? null; },
+            DefaultValueFactory = res => { return config.GetConfig()?.Table ?? null; },
         };
 
         headingsOption = new Option<string[]>("headings", "-h", "--headings")
         {
-            DefaultValueFactory = (ArgumentResult res) => { return config.GetConfig()?.Headings ?? null; }
+            DefaultValueFactory = res => { return config.GetConfig()?.Headings ?? null; }
         };
 
         Add(columnNamesOption);
@@ -67,7 +63,11 @@ public class TableCommand : Command
         }
 
         var xmlPath = result.GetValue<string>("xmlPath");
-        if (xmlPath == null) return;
+
+        if (xmlPath == null)
+        {
+            return;
+        }
 
         xmlPath = Path.GetFullPath(xmlPath);
         if (!Path.Exists(xmlPath))
@@ -79,10 +79,12 @@ public class TableCommand : Command
         var xml = new XmlDocument();
         xml.Load(xmlPath);
 
-        var table = new List<List<string>>();
-
         var nodes = xml.SelectNodes(rootXPath);
-        if (nodes is null) return;
+
+        if (nodes is null)
+        {
+            return;
+        }
 
         if (headings is not null)
         {
@@ -90,29 +92,35 @@ public class TableCommand : Command
             writer.WriteLine(string.Join(",", headings));
         }
 
-        foreach (var node in nodes)
+        foreach (object? node in nodes)
         {
-            if (node is XmlElement)
+            if (node is XmlElement el)
             {
-                var el = (XmlElement)node;
-                var list = new List<string>();
-
                 for (int i = 0; i < columnNames.Length - 1; i++)
                 {
-                    var element = el.SelectSingleNode(columnNames[i]);
-                    writer.Write($"{GetValue(element)},");
+                    writer.Write($"{GetValue(el.SelectSingleNode(columnNames[i]))},");
                 }
 
-                writer.WriteLine(GetValue(el.SelectSingleNode(columnNames[columnNames.Length - 1])));
+                writer.WriteLine(GetValue(el.SelectSingleNode(columnNames[^1])));
             }
         }
     }
 
-    private string GetValue(XmlNode? element)
+    private static string GetValue(XmlNode? element)
     {
-        if (element is null) return "";
-        else if (element is XmlAttribute) return element.Value ?? "";
-        else if (element is XmlElement) return element.InnerXml;
+        if (element is null)
+        {
+            return "";
+        }
+        else if (element is XmlAttribute)
+        {
+            return element.Value ?? "";
+        }
+        else if (element is XmlElement)
+        {
+            return element.InnerXml;
+        }
+
         return "";
     }
 }

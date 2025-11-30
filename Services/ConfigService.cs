@@ -37,7 +37,7 @@ public class ConfigService : IConfigService
         return config;
     }
 
-    private string? FindConfigFilePath(string fileName)
+    private static string? FindConfigFilePath(string fileName)
     {
         if (string.IsNullOrEmpty(fileName)) throw new ArgumentException("File name is empty! Can't find config file");
 
@@ -60,10 +60,9 @@ public class ConfigService : IConfigService
         }
     }
 
-    private XmleConfiguration GetConfiguration(string filePath)
+    private static XmleConfiguration GetConfiguration(string filePath)
     {
         XmleConfiguration? config = JsonConvert.DeserializeObject<XmleConfiguration>(File.ReadAllText(filePath));
-        if (config is null) throw new Exception("No Config Found!");
-        return config;
+        return config is null ? throw new ArgumentNullException(nameof(config), "No Config Found!") : config;
     }
 }

@@ -1,5 +1,6 @@
 using System.CommandLine;
 using System.CommandLine.Parsing;
+
 using xmle.Services;
 
 namespace xmle.Commands;
@@ -8,8 +9,8 @@ public class ViewCommand : Command
 {
     private readonly IXmlService xmlService;
     private readonly TextWriter writer;
-    private Option<string> xpathOption;
-    private Argument<string> xmlPathArgument;
+    private readonly Option<string> xpathOption;
+    private readonly Argument<string> xmlPathArgument;
 
     public ViewCommand(IXmlService xmlService, TextWriter writer) : base("view", "View data in JSON format")
     {
