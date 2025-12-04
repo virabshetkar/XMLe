@@ -1,0 +1,8 @@
+on: workflow_dispatch 
+
+jobs:
+  helloworld:
+    runs-on: self-hosted
+    steps: 
+      - name: Print Hello World
+        run: echo "Hello World!"
